@@ -1,6 +1,6 @@
 #[test_only]
-module Sender::UQ64x64Tests {
-    use Sender::UQ64x64;
+module UQ64x64::UQ64x64Tests {
+    use UQ64x64::UQ64x64;
 
     const U64_MAX: u64 = 18446744073709551615;
 

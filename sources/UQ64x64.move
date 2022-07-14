@@ -1,5 +1,5 @@
 /// Implementation of FixedPoint u64 in Move language.
-module Sender::UQ64x64 {
+module UQ64x64::UQ64x64 {
     // Error codes.
 
     /// When divide by zero attempted.
