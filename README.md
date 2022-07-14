@@ -16,7 +16,19 @@ Similar one used in [Uniswap](https://github.com/Uniswap/v2-core/blob/master/con
 
 Add to `Move.toml`:
 
-    
+```toml
+[dependencies.UQ64x64]
+git = "https://github.com/pontem-network/UQ64x64.git
+rev = "main"
+```
+
+And then use in code:
+
+```move
+use UQ64x64::UQ64x64;
+...
+let uq = encode(10);
+```
 
 ## LICENSE
 
