@@ -9,4 +9,4 @@ subdir = "aptos-move/framework/move-stdlib"
 addr_subst = { std = "0x1" }
 
 [addresses]
-uq64x64 ="b4d7b2466d211c1f4629e8340bb1a9e75e7f8fb38cc145c54c5c9f9d5017a318"
+uq64x64 = "b4d7b2466d211c1f4629e8340bb1a9e75e7f8fb38cc145c54c5c9f9d5017a318"

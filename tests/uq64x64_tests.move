@@ -1,8 +1,8 @@
 #[test_only]
-module uq64x64::UQ64x64Tests {
+module uq64x64::uq64x64_tests {
     use uq64x64::uq64x64;
 
-    const U64_MAX: u64 = 18446744073709551615;
+    const MAX_U64: u64 = 18446744073709551615;
 
     #[test]
     fun test_is_zero() {
@@ -26,9 +26,9 @@ module uq64x64::UQ64x64Tests {
         let b = uq64x64::decode(a);
         assert!(b == 100, 0);
 
-        a = uq64x64::encode(U64_MAX);
+        a = uq64x64::encode(MAX_U64);
         b = uq64x64::decode(a);
-        assert!(b == U64_MAX, 1);
+        assert!(b == MAX_U64, 1);
 
         a = uq64x64::encode(0);
         b = uq64x64::decode(a);
