@@ -19,15 +19,15 @@ Add to `Move.toml`:
 ```toml
 [dependencies.UQ64x64]
 git = "https://github.com/pontem-network/UQ64x64.git"
-rev = "v0.2.0"
+rev = "v0.3.0"
 ```
 
 And then use in code:
 
 ```move
-use UQ64x64::UQ64x64;
+use uq64x64::uq64x64;
 ...
-let uq = encode(10);
+let uq = uq64x64::encode(10);
 ```
 
 ## LICENSE
