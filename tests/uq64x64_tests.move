@@ -70,9 +70,4 @@ module uq64x64::uq64x64_tests {
         let a = uq64x64::encode(1);
         uq64x64::div(a, 0);
     }
-
-    #[test]
-    fun test_it_fails() {
-        assert!(false, 0);
-    }
 }
