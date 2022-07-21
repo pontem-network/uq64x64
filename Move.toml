@@ -1,6 +1,6 @@
 [package]
 name = "UQ64x64"
-version = "0.1.0"
+version = "0.3.0"
 
 [dependencies.MoveStdlib]
 git = "https://github.com/aptos-labs/aptos-core.git"
