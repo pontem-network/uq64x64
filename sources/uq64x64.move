@@ -7,7 +7,7 @@ module uq64x64::uq64x64 {
 
     // Constants.
 
-    const Q64: u128 = 18446744073709551615u128;
+    const Q64: u128 = 18446744073709551615;
 
     /// When a and b are equals.
     const EQUAL: u8 = 0;
@@ -29,6 +29,7 @@ module uq64x64::uq64x64 {
         UQ64x64{ v }
     }
     spec encode {
+        ensures Q64 == MAX_U64;
         ensures result.v == x * Q64;
         ensures result.v <= MAX_U128;
     }
