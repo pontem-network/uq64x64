@@ -7,7 +7,7 @@ module uq64x64::uq64x64 {
 
     // Constants.
 
-    const Q64: u128 = 18446744073709551615u128;
+    const Q64: u128 = 18446744073709551615;
 
     /// When a and b are equals.
     const EQUAL: u8 = 0;
@@ -28,15 +28,26 @@ module uq64x64::uq64x64 {
         let v = (x as u128) * Q64;
         UQ64x64{ v }
     }
+    spec encode {
+        ensures Q64 == MAX_U64;
+        ensures result.v == x * Q64;
+        ensures result.v <= MAX_U128;
+    }
 
     /// Decode a `UQ64x64` into a `u64` by truncating after the radix point.
     public fun decode(uq: UQ64x64): u64 {
         ((uq.v / Q64) as u64)
     }
+    spec decode {
+        ensures result == uq.v / Q64;
+    }
 
     /// Get `u128` from UQ64x64
     public fun to_u128(uq: UQ64x64): u128 {
         uq.v
+    }
+    spec to_u128 {
+        ensures result == uq.v;
     }
 
     /// Multiply a `UQ64x64` by a `u64`, returning a `UQ64x64`
@@ -46,6 +57,9 @@ module uq64x64::uq64x64 {
 
         UQ64x64{ v }
     }
+    spec mul {
+        ensures result.v == uq.v * y;
+    }
 
     /// Divide a `UQ64x64` by a `u128`, returning a `UQ64x64`.
     public fun div(uq: UQ64x64, y: u64): UQ64x64 {
@@ -53,6 +67,10 @@ module uq64x64::uq64x64 {
 
         let v = uq.v / (y as u128);
         UQ64x64{ v }
+    }
+    spec div {
+        aborts_if y == 0 with ERR_DIVIDE_BY_ZERO;
+        ensures result.v == uq.v / y;
     }
 
     /// Returns a `UQ64x64` which represents the ratio of the numerator to the denominator.
@@ -63,6 +81,10 @@ module uq64x64::uq64x64 {
         let v = r / (denominator as u128);
 
         UQ64x64{ v }
+    }
+    spec fraction {
+        aborts_if denominator == 0 with ERR_DIVIDE_BY_ZERO;
+        ensures result.v == numerator * Q64 / denominator;
     }
 
     /// Compare two `UQ64x64` numbers.
@@ -75,9 +97,18 @@ module uq64x64::uq64x64 {
             return GREATER_THAN
         }
     }
+    spec compare {
+        ensures left.v == right.v ==> result == EQUAL;
+        ensures left.v < right.v ==> result == LESS_THAN;
+        ensures left.v > right.v ==> result == GREATER_THAN;
+    }
 
     /// Check if `UQ64x64` is zero
     public fun is_zero(uq: &UQ64x64): bool {
         uq.v == 0
+    }
+    spec is_zero {
+        ensures uq.v == 0 ==> result == true;
+        ensures uq.v > 0 ==> result == false;
     }
 }
