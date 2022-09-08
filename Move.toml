@@ -2,11 +2,11 @@
 name = "UQ64x64"
 version = "0.3.5"
 
-[dependencies.MoveStdlib]
+[addresses]
+uq64x64 = "43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9"
+
+[dev-dependencies.MoveStdlib]
 git = "https://github.com/aptos-labs/aptos-core.git"
 rev = "f18cc2cac521b2a2eae5a5f08f1b787f61a2279d"
 subdir = "aptos-move/framework/move-stdlib"
 addr_subst = { std = "0x1" }
-
-[addresses]
-uq64x64 = "43417434fd869edee76cca2a4d2301e528a1551b1d719b75c350c3c97d15b8b9"
