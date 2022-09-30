@@ -106,6 +106,28 @@ module uq64x64::uq64x64 {
         UQ64x64{ v }
     }
 
+    /// Multiply a `UQ64x64` by a `UQ64x64`, returning a `UQ64x64`
+    public fun mul_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
+        let a_shift = a.v >> 32;
+        let b_shift = b.v >> 32;
+        // vm would direct abort when overflow occured
+        let v = a_shift * b_shift;
+
+        UQ64x64{ v }
+    }
+
+    
+    /// Divide a `UQ64x64` by a `UQ64x64`, returning a `UQ64x64`.
+    public fun div_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
+        assert!(b.v != 0, ERR_DIVIDE_BY_ZERO);
+        // vm would direct abort when overflow occured
+        let a_shift = a.v << 32;
+        let b_shift = b.v >> 32;
+        let v = a_shift / b_shift;
+
+        UQ64x64{ v }
+    }
+
     /// Returns a `UQ64x64` which represents the ratio of the numerator to the denominator.
     public fun fraction(numerator: u64, denominator: u64): UQ64x64 {
         assert!(denominator != 0, ERR_DIVIDE_BY_ZERO);

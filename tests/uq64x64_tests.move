@@ -146,4 +146,49 @@ module uq64x64::uq64x64_tests {
         uq64x64::sub_q(a, b);
     }
 
+    #[test]
+    fun test_mul_q() {
+        let a = uq64x64::encode(3);
+        let b = uq64x64::encode(2);
+        let z = uq64x64::mul_q(a, b);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 6, 0);
+        assert!(uq64x64::decode(z) == 6, 1);
+    }
+    
+    #[test]
+    fun test_mul_q_fraction() {
+        let a = uq64x64::fraction(5, 4); // 1.25
+        let b = uq64x64::encode(2);
+        let z = uq64x64::mul_q(a, b);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
+        // truncation should happen
+        assert!(uq64x64::decode(z) == 2, 1);
+    }
+    
+    #[test]
+    #[expected_failure]
+    fun test_fail_overflow_mul_q() {
+        let a = uq64x64::encode(MAX_U64);
+        let b = uq64x64::encode(10);
+        uq64x64::mul_q(a, b);
+    }
+    
+    #[test]
+    fun test_div_q() {
+        let a = uq64x64::encode(6);
+        let b = uq64x64::encode(2);
+        let z = uq64x64::div_q(a, b);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 3, 0);
+        assert!(uq64x64::decode(z) == 3, 1);
+    }
+    
+    #[test]
+    fun test_div_q_fraction() {
+        let a = uq64x64::fraction(5, 4); // 1.25
+        let b = uq64x64::fraction(1, 4); // 0.25
+        let z = uq64x64::div_q(a, b);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5, 0);
+        // truncation should happen
+        assert!(uq64x64::decode(z) == 5, 1);
+    }
 }
