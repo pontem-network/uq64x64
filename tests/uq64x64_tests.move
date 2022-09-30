@@ -2,7 +2,8 @@
 module uq64x64::uq64x64_tests {
     use uq64x64::uq64x64;
 
-    const MAX_U64: u64 = 18446744073709551615;
+    const MAX_U64: u64 = 18446744073709551615; // 2^64 - 1
+    const TWO_POWER_64: u128 = 18446744073709551616;
 
     #[test]
     fun test_is_zero() {
@@ -37,16 +38,26 @@ module uq64x64::uq64x64_tests {
 
     #[test]
     fun test_mul() {
-        let a = uq64x64::encode(500000);
+        let a = uq64x64::encode(5);
         let z = uq64x64::mul(a, 2);
-        assert!(uq64x64::to_u128(z) == 18446744073709551615000000, 0);
-        assert!(uq64x64::decode(z) == 1000000, 1);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 10, 0);
+        assert!(uq64x64::decode(z) == 10, 1);
     }
 
     #[test]
     fun test_fraction() {
-        let a = uq64x64::fraction(256, 8);
-        assert!(uq64x64::to_u128(a) == 590295810358705651680, 0);
+        let a = uq64x64::fraction(8, 2);
+        assert!(uq64x64::to_u128(a) == TWO_POWER_64 * 4, 0);
+        assert!(uq64x64::decode(a) == 4, 1);
+    }
+
+    #[test]
+    fun test_fraction_mul() {
+        let a = uq64x64::fraction(5, 4); // 1.25
+        let z = uq64x64::mul(a, 2); // 2.5
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
+        // truncation should happen
+        assert!(uq64x64::decode(z) == 2, 1);
     }
 
     #[test]
@@ -58,10 +69,10 @@ module uq64x64::uq64x64_tests {
 
     #[test]
     fun test_div() {
-        let a = uq64x64::encode(256);
-        let z = uq64x64::div(a, 8);
-        assert!(uq64x64::to_u128(z) == 590295810358705651680, 0);
-        assert!(uq64x64::decode(z) == 32, 1);
+        let a = uq64x64::encode(8);
+        let z = uq64x64::div(a, 2);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 4, 0);
+        assert!(uq64x64::decode(z) == 4, 1);
     }
 
     #[test]
@@ -70,4 +81,69 @@ module uq64x64::uq64x64_tests {
         let a = uq64x64::encode(1);
         uq64x64::div(a, 0);
     }
+
+    #[test]
+    fun test_add() {
+        let a = uq64x64::encode(2);
+        let z = uq64x64::add(a, 3);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5, 0);
+        assert!(uq64x64::decode(z) == 5, 1);
+    }
+    
+    #[test]
+    #[expected_failure]
+    fun test_fail_overflow_add() {
+        let a = uq64x64::encode(MAX_U64);
+        uq64x64::add(a, MAX_U64);
+    }
+
+    #[test]
+    fun test_sub() {
+        let a = uq64x64::encode(3);
+        let z = uq64x64::sub(a, 2);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64, 0);
+        assert!(uq64x64::decode(z) == 1, 1);
+    }
+    
+    #[test]
+    #[expected_failure]
+    fun test_fail_underflow_sub() {
+        let a = uq64x64::encode(5);
+        uq64x64::sub(a, 10);
+    }
+
+    #[test]
+    fun test_add_q() {
+        let a = uq64x64::encode(2);
+        let b = uq64x64::encode(3);
+        let z = uq64x64::add_q(a, b);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5, 0);
+        assert!(uq64x64::decode(z) == 5, 1);
+    }
+    
+    #[test]
+    #[expected_failure]
+    fun test_fail_overflow_add_q() {
+        let a = uq64x64::encode(MAX_U64);
+        let b = uq64x64::encode(3);
+        uq64x64::add_q(a, b);
+    }
+
+    #[test]
+    fun test_sub_q() {
+        let a = uq64x64::encode(3);
+        let b = uq64x64::encode(2);
+        let z = uq64x64::sub_q(a, b);
+        assert!(uq64x64::to_u128(z) == TWO_POWER_64, 0);
+        assert!(uq64x64::decode(z) == 1, 1);
+    }
+    
+    #[test]
+    #[expected_failure]
+    fun test_fail_underflow_sub_q() {
+        let a = uq64x64::encode(5);
+        let b = uq64x64::encode(10);
+        uq64x64::sub_q(a, b);
+    }
+
 }

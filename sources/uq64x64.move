@@ -5,10 +5,6 @@ module uq64x64::uq64x64 {
     /// When divide by zero attempted.
     const ERR_DIVIDE_BY_ZERO: u64 = 100;
 
-    // Constants.
-
-    const Q64: u128 = 18446744073709551615;
-
     /// When a and b are equals.
     const EQUAL: u8 = 0;
 
@@ -25,24 +21,23 @@ module uq64x64::uq64x64 {
 
     /// Encode `u64` to `UQ64x64`
     public fun encode(x: u64): UQ64x64 {
-        let v = (x as u128) * Q64;
+        let v = (x as u128) << 64;
         UQ64x64{ v }
     }
     spec encode {
-        ensures Q64 == MAX_U64;
-        ensures result.v == x * Q64;
+        ensures result.v == x << 64;
         ensures result.v <= MAX_U128;
     }
 
     /// Decode a `UQ64x64` into a `u64` by truncating after the radix point.
     public fun decode(uq: UQ64x64): u64 {
-        ((uq.v / Q64) as u64)
+        ((uq.v >> 64) as u64)
     }
     spec decode {
-        ensures result == uq.v / Q64;
+        ensures result == uq.v >> 64;
     }
 
-    /// Get `u128` from UQ64x64
+    /// Get `u128` (raw value) from UQ64x64
     public fun to_u128(uq: UQ64x64): u128 {
         uq.v
     }
@@ -61,7 +56,7 @@ module uq64x64::uq64x64 {
         ensures result.v == uq.v * y;
     }
 
-    /// Divide a `UQ64x64` by a `u128`, returning a `UQ64x64`.
+    /// Divide a `UQ64x64` by a `u64`, returning a `UQ64x64`.
     public fun div(uq: UQ64x64, y: u64): UQ64x64 {
         assert!(y != 0, ERR_DIVIDE_BY_ZERO);
 
@@ -73,18 +68,56 @@ module uq64x64::uq64x64 {
         ensures result.v == uq.v / y;
     }
 
+    /// Add a `UQ64x64` and a `u64`, returning a `UQ64x64`
+    public fun add(uq: UQ64x64, y: u64): UQ64x64 {
+        // vm would direct abort when overflow occured
+        let v = uq.v + ((y as u128) << 64);
+
+        UQ64x64{ v }
+    }
+    spec add {
+        ensures result.v == uq.v + y;
+    }
+
+    /// Subtract `UQ64x64` by a `u64`, returning a `UQ64x64`
+    public fun sub(uq: UQ64x64, y: u64): UQ64x64 {
+        // vm would direct abort when underflow occured
+        let v = uq.v - ((y as u128) << 64);
+
+        UQ64x64{ v }
+    }
+    spec sub {
+        ensures result.v = uq.v - (y << 64);
+    }
+
+    /// Add a `UQ64x64` and a `UQ64x64`, returning a `UQ64x64`
+    public fun add_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
+        // vm would direct abort when overflow occured
+        let v = a.v + b.v;
+
+        UQ64x64{ v }
+    }
+
+    /// Subtract `UQ64x64` by a `UQ64x64`, returning a `UQ64x64`
+    public fun sub_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
+        // vm would direct abort when underflow occured
+        let v = a.v - b.v;
+
+        UQ64x64{ v }
+    }
+
     /// Returns a `UQ64x64` which represents the ratio of the numerator to the denominator.
     public fun fraction(numerator: u64, denominator: u64): UQ64x64 {
         assert!(denominator != 0, ERR_DIVIDE_BY_ZERO);
 
-        let r = (numerator as u128) * Q64;
+        let r = (numerator as u128) << 64;
         let v = r / (denominator as u128);
 
         UQ64x64{ v }
     }
     spec fraction {
         aborts_if denominator == 0 with ERR_DIVIDE_BY_ZERO;
-        ensures result.v == numerator * Q64 / denominator;
+        ensures result.v == (numerator << 64) / denominator;
     }
 
     /// Compare two `UQ64x64` numbers.
