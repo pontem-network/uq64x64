@@ -35,6 +35,13 @@ module uq64x64::uq64x64_tests {
         b = uq64x64::decode(a);
         assert!(b == 0, 2);
     }
+    
+    #[test]
+    fun test_from_and_to() {
+        let a = uq64x64::from_u128(1);
+        let b = uq64x64::to_u128(a);
+        assert!(b == 1, 0);
+    }
 
     #[test]
     fun test_mul() {
@@ -190,5 +197,21 @@ module uq64x64::uq64x64_tests {
         assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5, 0);
         // truncation should happen
         assert!(uq64x64::decode(z) == 5, 1);
+    }
+    
+    #[test]
+    #[expected_failure(abort_code = 101)]
+    fun test_fail_divisor_too_small_div_q() {
+        let a = uq64x64::encode(10);
+        let b = uq64x64::from_u128(1);
+        uq64x64::div_q(a, b);
+    }
+    
+    #[test]
+    #[expected_failure(abort_code = 102)]
+    fun test_fail_overflow_div_q() {
+        let a = uq64x64::from_u128(1 << 100);
+        let b = uq64x64::encode(10);
+        uq64x64::div_q(a, b);
     }
 }

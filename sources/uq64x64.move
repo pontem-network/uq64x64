@@ -5,6 +5,12 @@ module uq64x64::uq64x64 {
     /// When divide by zero attempted.
     const ERR_DIVIDE_BY_ZERO: u64 = 100;
 
+    /// When divisor is too small that will cause overflow
+    const ERR_DIVISOR_TOO_SMALL: u64 = 101;
+    
+    /// When divident is too large that will cause overflow
+    const ERR_DIVIDENT_TOO_LARGE: u64 = 102;
+
     /// When a and b are equals.
     const EQUAL: u8 = 0;
 
@@ -43,6 +49,14 @@ module uq64x64::uq64x64 {
     }
     spec to_u128 {
         ensures result == uq.v;
+    }
+    
+    /// Convert from `u128` (raw value) to UQ64x64
+    public fun from_u128(v: u128): UQ64x64 {
+        UQ64x64{ v }
+    }
+    spec to_u128 {
+        ensures result.v == v;
     }
 
     /// Multiply a `UQ64x64` by a `u64`, returning a `UQ64x64`
@@ -107,6 +121,7 @@ module uq64x64::uq64x64 {
     }
 
     /// Multiply a `UQ64x64` by a `UQ64x64`, returning a `UQ64x64`
+    /// To avoid overflow, the result must be smaller than MAX_U64
     public fun mul_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
         let a_shift = a.v >> 32;
         let b_shift = b.v >> 32;
@@ -118,11 +133,15 @@ module uq64x64::uq64x64 {
 
     
     /// Divide a `UQ64x64` by a `UQ64x64`, returning a `UQ64x64`.
+    /// To avoid overflow, the divident must be smaller than MAX_U96
     public fun div_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
-        assert!(b.v != 0, ERR_DIVIDE_BY_ZERO);
-        // vm would direct abort when overflow occured
+        // make sure a.v << 32 won't overflow
+        let a_overflow_check = a.v >> 96;
+        assert!(a_overflow_check == 0, ERR_DIVIDENT_TOO_LARGE);
+
         let a_shift = a.v << 32;
         let b_shift = b.v >> 32;
+        assert!(b_shift != 0, ERR_DIVISOR_TOO_SMALL);
         let v = a_shift / b_shift;
 
         UQ64x64{ v }
