@@ -35,6 +35,18 @@ module uq64x64::uq64x64_tests {
         b = uq64x64::decode(a);
         assert!(b == 0, 2);
     }
+
+    #[test]
+    fun test_one() {
+        let a = uq64x64::one();
+        assert!(uq64x64::to_u128(a) == 1 << 64, 0);
+    }
+
+    #[test]
+    fun test_zero() {
+        let a = uq64x64::zero();
+        assert!(uq64x64::to_u128(a) == 0, 0);
+    }
     
     #[test]
     fun test_from_and_to() {
