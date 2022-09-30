@@ -55,8 +55,18 @@ module uq64x64::uq64x64 {
     public fun from_u128(v: u128): UQ64x64 {
         UQ64x64{ v }
     }
-    spec to_u128 {
+    spec from_u128 {
         ensures result.v == v;
+    }
+
+    /// Get integer "one" in UQ64x64
+    public fun one(): UQ64x64 {
+        UQ64x64{ v: 1 << 64 }
+    }
+    
+    /// Get integer "zero" in UQ64x64
+    public fun zero(): UQ64x64 {
+        UQ64x64{ v: 0 }
     }
 
     /// Multiply a `UQ64x64` by a `u64`, returning a `UQ64x64`
