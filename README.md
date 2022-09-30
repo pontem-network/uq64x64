@@ -18,8 +18,8 @@ Add to `Move.toml`:
 
 ```toml
 [dependencies.UQ64x64]
-git = "https://github.com/pontem-network/UQ64x64.git"
-rev = "v0.3.6"
+git = "https://github.com/ThalaLabs/UQ64x64.git"
+rev = "v0.3.7"
 ```
 
 And then use in code:
