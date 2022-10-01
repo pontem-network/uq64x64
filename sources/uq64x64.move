@@ -8,8 +8,11 @@ module uq64x64::uq64x64 {
     /// When divisor is too small that will cause overflow
     const ERR_DIVISOR_TOO_SMALL: u64 = 101;
     
-    /// When divident is too large that will cause overflow
-    const ERR_DIVIDENT_TOO_LARGE: u64 = 102;
+    /// When divide result is too large that will cause overflow
+    const ERR_DIVIDE_RESULT_TOO_LARGE: u64 = 102;
+
+    /// Max uint 32 (0xFFFFFFFF)
+    const MAX_U32: u128 = 4294967295;
 
     /// When a and b are equals.
     const EQUAL: u8 = 0;
@@ -35,12 +38,12 @@ module uq64x64::uq64x64 {
         ensures result.v <= MAX_U128;
     }
 
-    /// Decode a `UQ64x64` into a `u64` by truncating after the radix point.
+    /// Decode a `UQ64x64` into a `u64` by rounding to closest integer
     public fun decode(uq: UQ64x64): u64 {
-        ((uq.v >> 64) as u64)
-    }
-    spec decode {
-        ensures result == uq.v >> 64;
+        let a = ((uq.v >> 64) as u64);
+        let mask: u128 = 1 << 63;
+        if (uq.v & mask > 0) a = a + 1;
+        a
     }
 
     /// Get `u128` (raw value) from UQ64x64
@@ -135,24 +138,25 @@ module uq64x64::uq64x64 {
     public fun mul_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
         let a_shift = a.v >> 32;
         let b_shift = b.v >> 32;
+        let a_low_32 = a.v & MAX_U32;
+        let b_low_32 = b.v & MAX_U32;
         // vm would direct abort when overflow occured
-        let v = a_shift * b_shift;
+        let v = a_shift * b_shift + ((a_shift * b_low_32) >> 32) + ((b_shift * a_low_32) >> 32);
 
         UQ64x64{ v }
     }
 
     
     /// Divide a `UQ64x64` by a `UQ64x64`, returning a `UQ64x64`.
-    /// To avoid overflow, the divident must be smaller than MAX_U96
+    /// To avoid overflow, the result must be smaller than MAX_U64
     public fun div_q(a: UQ64x64, b: UQ64x64): UQ64x64 {
-        // make sure a.v << 32 won't overflow
-        let a_overflow_check = a.v >> 96;
-        assert!(a_overflow_check == 0, ERR_DIVIDENT_TOO_LARGE);
-
-        let a_shift = a.v << 32;
         let b_shift = b.v >> 32;
         assert!(b_shift != 0, ERR_DIVISOR_TOO_SMALL);
-        let v = a_shift / b_shift;
+        
+        let result = a.v / b_shift;
+        // make sure result << 32 won't overflow
+        assert!(result >> 96 == 0, ERR_DIVIDE_RESULT_TOO_LARGE);
+        let v = result << 32;
 
         UQ64x64{ v }
     }
@@ -194,5 +198,23 @@ module uq64x64::uq64x64 {
     spec is_zero {
         ensures uq.v == 0 ==> result == true;
         ensures uq.v > 0 ==> result == false;
+    }
+
+    public fun min(a: &UQ64x64, b: &UQ64x64): &UQ64x64 {
+        let result = compare(a, b);
+        if (result == LESS_THAN) {
+            return a
+        } else {
+            return b
+        }
+    }
+    
+    public fun max(a: &UQ64x64, b: &UQ64x64): &UQ64x64 {
+        let result = compare(a, b);
+        if (result == GREATER_THAN) {
+            return a
+        } else {
+            return b
+        }
     }
 }

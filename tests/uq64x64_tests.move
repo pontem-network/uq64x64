@@ -22,7 +22,7 @@ module uq64x64::uq64x64_tests {
     }
 
     #[test]
-    fun test_encode() {
+    fun test_encode_decode() {
         let a = uq64x64::encode(100);
         let b = uq64x64::decode(a);
         assert!(b == 100, 0);
@@ -34,6 +34,10 @@ module uq64x64::uq64x64_tests {
         a = uq64x64::encode(0);
         b = uq64x64::decode(a);
         assert!(b == 0, 2);
+
+        a = uq64x64::fraction(1, 2);
+        b = uq64x64::decode(a);
+        assert!(b == 1, 3);
     }
 
     #[test]
@@ -75,8 +79,7 @@ module uq64x64::uq64x64_tests {
         let a = uq64x64::fraction(5, 4); // 1.25
         let z = uq64x64::mul(a, 2); // 2.5
         assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
-        // truncation should happen
-        assert!(uq64x64::decode(z) == 2, 1);
+        assert!(uq64x64::decode(z) == 3, 1);
     }
 
     #[test]
@@ -180,8 +183,7 @@ module uq64x64::uq64x64_tests {
         let b = uq64x64::encode(2);
         let z = uq64x64::mul_q(a, b);
         assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
-        // truncation should happen
-        assert!(uq64x64::decode(z) == 2, 1);
+        assert!(uq64x64::decode(z) == 3, 1);
     }
     
     #[test]
@@ -207,7 +209,6 @@ module uq64x64::uq64x64_tests {
         let b = uq64x64::fraction(1, 4); // 0.25
         let z = uq64x64::div_q(a, b);
         assert!(uq64x64::to_u128(z) == TWO_POWER_64 * 5, 0);
-        // truncation should happen
         assert!(uq64x64::decode(z) == 5, 1);
     }
     
@@ -222,8 +223,16 @@ module uq64x64::uq64x64_tests {
     #[test]
     #[expected_failure(abort_code = 102)]
     fun test_fail_overflow_div_q() {
-        let a = uq64x64::from_u128(1 << 100);
-        let b = uq64x64::encode(10);
+        let a = uq64x64::from_u128(1 << 125);
+        let b = uq64x64::from_u128(1 << 35);
         uq64x64::div_q(a, b);
+    }
+    
+    #[test]
+    fun test_min_max() {
+        let a = uq64x64::encode(6);
+        let b = uq64x64::encode(2);
+        assert!(uq64x64::min(&a, &b) == &b, 0);
+        assert!(uq64x64::max(&a, &b) == &a, 1);
     }
 }
