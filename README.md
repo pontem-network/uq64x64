@@ -1,6 +1,8 @@
-## UQ64x64
+## FixedPoint64
 
 Implements fixed point numbers in Move language using the Q number format.
+
+Use u128 as underlying data storage. 64 bits for fractional part.
 
 Similar one used in [Uniswap](https://github.com/Uniswap/v2-core/blob/master/contracts/libraries/UQ112x112.sol) v2 core.
 
@@ -17,17 +19,17 @@ Similar one used in [Uniswap](https://github.com/Uniswap/v2-core/blob/master/con
 Add to `Move.toml`:
 
 ```toml
-[dependencies.UQ64x64]
-git = "https://github.com/ThalaLabs/UQ64x64.git"
+[dependencies.FixedPoint64]
+git = "https://github.com/ThalaLabs/FixedPoint64.git"
 rev = "<commit hash>"
 ```
 
 And then use in code:
 
 ```move
-use uq64x64::uq64x64;
+use fixed_point64::fixed_point64;
 ...
-let uq = uq64x64::encode(10);
+let number = fixed_point64::encode(10);
 ```
 
 ## LICENSE
