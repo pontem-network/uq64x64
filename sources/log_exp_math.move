@@ -1,4 +1,3 @@
-/// Implementation of FixedPoint u64 in Move language.
 module fixed_point64::log_exp_math {
     use fixed_point64::fixed_point64::{Self, FixedPoint64};
 
@@ -32,7 +31,7 @@ module fixed_point64::log_exp_math {
 
     const LOG_2_E_INV_RAW: u128 = 12786308645977587712; // 1.0 / log_2(e)
 
-    // code reference: https://github.com/dmoulding/log2fix/blob/master /log2fix.c
+    // code reference: https://github.com/dmoulding/log2fix/blob/master/log2fix.c
     // algorithm: http://www.claysturner.com/dsp/BinaryLogarithm.pdf
     public fun log2(x: FixedPoint64): (u8, FixedPoint64) {
         let precision: u8 = 64;
