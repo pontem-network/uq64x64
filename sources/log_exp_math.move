@@ -175,8 +175,6 @@ module fixed_point64::log_exp_math {
         } else {
             // x^y = exp(y * ln(x))
             let (sign, ln_x) = ln(x);
-            std::debug::print(&sign);
-            std::debug::print(&ln_x);
             let y_times_ln_x = fixed_point64::mul_fp(y, ln_x);
             result = exp(sign, y_times_ln_x);
         };
