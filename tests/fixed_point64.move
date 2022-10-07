@@ -235,4 +235,22 @@ module fixed_point64::fixed_point64_tests {
         assert!(fixed_point64::min(&a, &b) == &b, 0);
         assert!(fixed_point64::max(&a, &b) == &a, 1);
     }
+    
+    #[test]
+    fun test_lt_lte_gt_gte() {
+        let a = fixed_point64::from_u128(1);
+        let b = fixed_point64::from_u128(2);
+
+        assert!(fixed_point64::lt(&a, &b), 0);
+        assert!(fixed_point64::lte(&a, &b), 0);
+        assert!(fixed_point64::lte(&a, &a), 0);
+        assert!(fixed_point64::gt(&b, &a), 0);
+        assert!(fixed_point64::gte(&b, &a), 0);
+        assert!(fixed_point64::gte(&b, &b), 0);
+
+        assert!(!fixed_point64::lt(&b, &a), 0);
+        assert!(!fixed_point64::lte(&b, &a), 0);
+        assert!(!fixed_point64::gt(&a, &b), 0);
+        assert!(!fixed_point64::gte(&a, &b), 0);
+    }
 }
