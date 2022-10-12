@@ -37,7 +37,15 @@ module fixed_point64::fixed_point64_tests {
 
         a = fixed_point64::fraction(1, 2);
         b = fixed_point64::decode(a);
-        assert!(b == 1, 3);
+        let c = fixed_point64::decode_round_up(a);
+        assert!(b == 0, 3);
+        assert!(c == 1, 4);
+        
+        a = fixed_point64::fraction(2, 2);
+        b = fixed_point64::decode(a);
+        c = fixed_point64::decode_round_up(a);
+        assert!(b == 1, 5);
+        assert!(c == 1, 6);
     }
 
     #[test]
@@ -79,7 +87,7 @@ module fixed_point64::fixed_point64_tests {
         let a = fixed_point64::fraction(5, 4); // 1.25
         let z = fixed_point64::mul(a, 2); // 2.5
         assert!(fixed_point64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
-        assert!(fixed_point64::decode(z) == 3, 1);
+        assert!(fixed_point64::decode(z) == 2, 1);
     }
 
     #[test]
@@ -183,7 +191,7 @@ module fixed_point64::fixed_point64_tests {
         let b = fixed_point64::encode(2);
         let z = fixed_point64::mul_fp(a, b);
         assert!(fixed_point64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
-        assert!(fixed_point64::decode(z) == 3, 1);
+        assert!(fixed_point64::decode(z) == 2, 1);
     }
     
     #[test]
