@@ -165,6 +165,12 @@ module fixed_point64::log_exp_math {
         result
     }
 
+    spec exp {
+        // opaque is required for recursive function
+        // otherwise move prover will complain even if we don't prove anything here
+        pragma opaque;
+    }
+
     public fun pow(x: FixedPoint64, y: FixedPoint64): FixedPoint64 {
         let result;
         if (fixed_point64::to_u128(y) == 0) {
