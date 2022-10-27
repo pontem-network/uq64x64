@@ -11,8 +11,11 @@ module fixed_point64::fixed_point64 {
     /// When divide result is too large that will cause overflow
     const ERR_DIVIDE_RESULT_TOO_LARGE: u64 = 102;
 
-    /// Max uint 32 (0xFFFFFFFF)
-    const MAX_U32: u128 = 4294967295;
+    /// 2^64 == 1 << 64
+    const TWO_POW_64: u128 = 1 << 64;
+
+    /// 2^32 == 1 << 32
+    const TWO_POW_32: u128 = 1 << 32;
 
     /// When a and b are equals.
     const EQUAL: u8 = 0;
@@ -33,10 +36,6 @@ module fixed_point64::fixed_point64 {
         let v = (x as u128) << 64;
         FixedPoint64{ v }
     }
-    spec encode {
-        ensures result.v == x << 64;
-        ensures result.v <= MAX_U128;
-    }
 
     /// Decode a `FixedPoint64` into a `u64` by rounding down
     /// This should be the default way to convert back to integer
@@ -49,25 +48,22 @@ module fixed_point64::fixed_point64 {
     /// Decode a `FixedPoint64` into a `u64` by rounding up
     public fun decode_round_up(fp: FixedPoint64): u64 {
         let a = ((fp.v >> 64) as u64);
-        let mask: u128 = (1 << 64) - 1;
-        if (fp.v & mask > 0) a = a + 1;
-        a
+        if (fp.v - (fp.v / TWO_POW_64) * TWO_POW_64 > 0) {
+            a + 1
+        }
+        else {
+            a
+        }
     }
 
     /// Get `u128` (raw value) from FixedPoint64
     public fun to_u128(fp: FixedPoint64): u128 {
         fp.v
     }
-    spec to_u128 {
-        ensures result == fp.v;
-    }
     
     /// Convert from `u128` (raw value) to FixedPoint64
     public fun from_u128(v: u128): FixedPoint64 {
         FixedPoint64{ v }
-    }
-    spec from_u128 {
-        ensures result.v == v;
     }
 
     /// Get integer "one" in FixedPoint64
@@ -87,9 +83,6 @@ module fixed_point64::fixed_point64 {
 
         FixedPoint64{ v }
     }
-    spec mul {
-        ensures result.v == fp.v * y;
-    }
 
     /// Divide a `FixedPoint64` by a `u64`, returning a `FixedPoint64`.
     public fun div(fp: FixedPoint64, y: u64): FixedPoint64 {
@@ -98,10 +91,6 @@ module fixed_point64::fixed_point64 {
         let v = fp.v / (y as u128);
         FixedPoint64{ v }
     }
-    spec div {
-        aborts_if y == 0 with ERR_DIVIDE_BY_ZERO;
-        ensures result.v == fp.v / y;
-    }
 
     /// Add a `FixedPoint64` and a `u64`, returning a `FixedPoint64`
     public fun add(fp: FixedPoint64, y: u64): FixedPoint64 {
@@ -109,9 +98,6 @@ module fixed_point64::fixed_point64 {
         let v = fp.v + ((y as u128) << 64);
 
         FixedPoint64{ v }
-    }
-    spec add {
-        ensures result.v == fp.v + y;
     }
 
     /// Subtract `FixedPoint64` by a `u64`, returning a `FixedPoint64`
@@ -122,7 +108,7 @@ module fixed_point64::fixed_point64 {
         FixedPoint64{ v }
     }
     spec sub {
-        ensures result.v = fp.v - (y << 64);
+        aborts_if fp.v < (y << 64);
     }
 
     /// Add a `FixedPoint64` and a `FixedPoint64`, returning a `FixedPoint64`
@@ -140,14 +126,17 @@ module fixed_point64::fixed_point64 {
 
         FixedPoint64{ v }
     }
+    spec sub_fp {
+        aborts_if a.v < b.v;
+    }
 
     /// Multiply a `FixedPoint64` by a `FixedPoint64`, returning a `FixedPoint64`
     /// To avoid overflow, the result must be smaller than MAX_U64
     public fun mul_fp(a: FixedPoint64, b: FixedPoint64): FixedPoint64 {
         let a_shift = a.v >> 32;
         let b_shift = b.v >> 32;
-        let a_low_32 = a.v & MAX_U32;
-        let b_low_32 = b.v & MAX_U32;
+        let a_low_32 = a.v - a_shift * TWO_POW_32;
+        let b_low_32 = b.v - b_shift * TWO_POW_32;
         // vm would direct abort when overflow occured
         let v = a_shift * b_shift + ((a_shift * b_low_32) >> 32) + ((b_shift * a_low_32) >> 32);
 
