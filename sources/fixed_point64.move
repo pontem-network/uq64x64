@@ -37,10 +37,24 @@ module fixed_point64::fixed_point64 {
         FixedPoint64{ v }
     }
 
-    /// Decode a `FixedPoint64` into a `u64` by rounding down
+    /// Decode a `FixedPoint64` into a `u64` by rounding to nearest integer
     /// This should be the default way to convert back to integer
-    /// Unless you have a good reason to round up
+    /// Unless you have a good reason to round up or down
     public fun decode(fp: FixedPoint64): u64 {
+        let a = ((fp.v >> 64) as u64);
+        let v_shifted = fp.v >> 63;
+        // equivalent to (we want to avoid using `&`)
+        // if (fp.v & mask > 0) a = a + 1;
+        if (v_shifted % 2 == 1) {
+            a + 1
+        }
+        else {
+            a
+        }
+    }
+    
+    /// Decode a `FixedPoint64` into a `u64` by rounding down
+    public fun decode_round_down(fp: FixedPoint64): u64 {
         let a = ((fp.v >> 64) as u64);
         a
     }

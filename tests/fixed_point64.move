@@ -25,27 +25,51 @@ module fixed_point64::fixed_point64_tests {
     fun test_encode_decode() {
         let a = fixed_point64::encode(100);
         let b = fixed_point64::decode(a);
+        let c = fixed_point64::decode_round_up(a);
+        let d = fixed_point64::decode_round_down(a);
         assert!(b == 100, 0);
+        assert!(c == 100, 0);
+        assert!(d == 100, 0);
 
         a = fixed_point64::encode(MAX_U64);
         b = fixed_point64::decode(a);
+        c = fixed_point64::decode_round_up(a);
+        d = fixed_point64::decode_round_down(a);
         assert!(b == MAX_U64, 1);
+        assert!(c == MAX_U64, 1);
+        assert!(d == MAX_U64, 1);
 
         a = fixed_point64::encode(0);
         b = fixed_point64::decode(a);
+        c = fixed_point64::decode_round_up(a);
+        d = fixed_point64::decode_round_down(a);
         assert!(b == 0, 2);
+        assert!(c == 0, 2);
+        assert!(d == 0, 2);
 
         a = fixed_point64::fraction(1, 2);
         b = fixed_point64::decode(a);
-        let c = fixed_point64::decode_round_up(a);
-        assert!(b == 0, 3);
-        assert!(c == 1, 4);
+        c = fixed_point64::decode_round_up(a);
+        d = fixed_point64::decode_round_down(a);
+        assert!(b == 1, 3);
+        assert!(c == 1, 3);
+        assert!(d == 0, 3);
         
         a = fixed_point64::fraction(2, 2);
         b = fixed_point64::decode(a);
         c = fixed_point64::decode_round_up(a);
+        d = fixed_point64::decode_round_down(a);
+        assert!(b == 1, 4);
+        assert!(c == 1, 4);
+        assert!(d == 1, 4);
+        
+        a = fixed_point64::fraction(2, 3);
+        b = fixed_point64::decode(a);
+        c = fixed_point64::decode_round_up(a);
+        d = fixed_point64::decode_round_down(a);
         assert!(b == 1, 5);
-        assert!(c == 1, 6);
+        assert!(c == 1, 5);
+        assert!(d == 0, 5);
     }
 
     #[test]
@@ -87,7 +111,7 @@ module fixed_point64::fixed_point64_tests {
         let a = fixed_point64::fraction(5, 4); // 1.25
         let z = fixed_point64::mul(a, 2); // 2.5
         assert!(fixed_point64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
-        assert!(fixed_point64::decode(z) == 2, 1);
+        assert!(fixed_point64::decode(z) == 3, 1);
     }
 
     #[test]
@@ -191,7 +215,7 @@ module fixed_point64::fixed_point64_tests {
         let b = fixed_point64::encode(2);
         let z = fixed_point64::mul_fp(a, b);
         assert!(fixed_point64::to_u128(z) == TWO_POWER_64 * 5 / 2, 0);
-        assert!(fixed_point64::decode(z) == 2, 1);
+        assert!(fixed_point64::decode(z) == 3, 1);
     }
     
     #[test]
