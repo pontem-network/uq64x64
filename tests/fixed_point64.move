@@ -269,7 +269,7 @@ module fixed_point64::fixed_point64_tests {
     }
     
     #[test]
-    fun test_lt_lte_gt_gte() {
+    fun test_lt_lte_gt_gte_eq() {
         let a = fixed_point64::from_u128(1);
         let b = fixed_point64::from_u128(2);
 
@@ -284,5 +284,9 @@ module fixed_point64::fixed_point64_tests {
         assert!(!fixed_point64::lte(&b, &a), 0);
         assert!(!fixed_point64::gt(&a, &b), 0);
         assert!(!fixed_point64::gte(&a, &b), 0);
+
+        assert!(!fixed_point64::eq(&a, &b), 0);
+        let c = fixed_point64::from_u128(1);
+        assert!(fixed_point64::eq(&a, &c), 0);
     }
 }

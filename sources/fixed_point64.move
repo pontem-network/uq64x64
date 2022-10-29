@@ -217,9 +217,14 @@ module fixed_point64::fixed_point64 {
         compare(left, right) != GREATER_THAN
     }
 
-    /// Greater or equal then
+    /// Greater or equal than
     public fun gte(left: &FixedPoint64, right: &FixedPoint64): bool {
         compare(left, right) != LESS_THAN
+    }
+
+    /// Equal than
+    public fun eq(left: &FixedPoint64, right: &FixedPoint64): bool {
+        left.v == right.v
     }
 
     /// Check if `FixedPoint64` is zero
