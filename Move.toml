@@ -3,10 +3,10 @@ name = "FixedPoint64"
 version = "0.3.6"
 
 [addresses]
-fixed_point64 = "0xc2bdb7930529b78010b90ecdc1986d8bbd123239991696161e5aa5700995c673"
+fixed_point64 = "0x2"
 
 [dev-dependencies.MoveStdlib]
 git = "https://github.com/aptos-labs/aptos-core.git"
-rev = "f18cc2cac521b2a2eae5a5f08f1b787f61a2279d"
+rev = "23d258d1f2440267f866eeb27f9830be48682af8"
 subdir = "aptos-move/framework/move-stdlib"
 addr_subst = { std = "0x1" }
