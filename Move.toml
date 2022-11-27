@@ -1,9 +1,9 @@
 [package]
 name = "FixedPoint64"
-version = "0.3.6"
+version = "0.1.0"
 
 [addresses]
-fixed_point64 = "0x2"
+fixed_point64 = "92285e3fb7903c2b2fd17d96da946cbd76b927a1bad1649f465b698af5f76e87"
 
 [dev-dependencies.MoveStdlib]
 git = "https://github.com/aptos-labs/aptos-core.git"
