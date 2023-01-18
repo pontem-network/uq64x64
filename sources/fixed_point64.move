@@ -237,20 +237,10 @@ module fixed_point64::fixed_point64 {
     }
 
     public fun min(a: &FixedPoint64, b: &FixedPoint64): &FixedPoint64 {
-        let result = compare(a, b);
-        if (result == LESS_THAN) {
-            return a
-        } else {
-            return b
-        }
+        if (compare(a, b) == LESS_THAN) a else b
     }
     
     public fun max(a: &FixedPoint64, b: &FixedPoint64): &FixedPoint64 {
-        let result = compare(a, b);
-        if (result == GREATER_THAN) {
-            return a
-        } else {
-            return b
-        }
+        if (compare(a, b) == GREATER_THAN) a else b
     }
 }
