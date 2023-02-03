@@ -4,7 +4,7 @@ module fixed_point64::log_exp_math {
     // Error codes.
 
     /// When exponent is too large
-    const ERR_EXPONENT_TOO_LARGE: u64 = 200;
+    const ERR_EXPONENT_TOO_LARGE: u64 = 0;
     
     const ONE_RAW: u128 = 1 << 64;
     const TWO_RAW: u128 = 1 << 65;
@@ -31,14 +31,15 @@ module fixed_point64::log_exp_math {
 
     const LOG_2_E_INV_RAW: u128 = 12786308645977587712; // 1.0 / log_2(e)
 
+    const PRECISION: u8 = 64; // number of bits in the mantissa
+
     // code reference: https://github.com/dmoulding/log2fix/blob/master/log2fix.c
     // algorithm: http://www.claysturner.com/dsp/BinaryLogarithm.pdf
     public fun log2(x: FixedPoint64): (u8, FixedPoint64) {
-        let precision: u8 = 64;
         let z = fixed_point64::to_u128(x);
         let y: u128 = 0;
         let y_negative: u128 = 0;
-        let b: u128 = 1 << (precision - 1);
+        let b: u128 = 1 << (PRECISION - 1);
         let i: u8 = 0;
         let sign: u8 = 1;
 
@@ -54,9 +55,12 @@ module fixed_point64::log_exp_math {
             y_negative = y_negative + ONE_RAW;
         };
 
-        while (i < 32) {
-            z = (z >> 32) * (z >> 32);
-            if (z >= 2 << precision) { 
+        while (i < 62) {
+            // to calculate (z*z) >> 64, use the fact that z is in the range [1,2)
+            // (z >> 1) can fill in lower 64 bits of u128
+            // therefore, (z >> 1) * (z >> 1) will not overflow
+            z = ((z >> 1) * (z >> 1)) >> 62;
+            if (z >= TWO_RAW) { 
                 z = z >> 1;
                 y = y + b;
             };
