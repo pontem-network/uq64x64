@@ -115,7 +115,7 @@ module fixed_point64::fixed_point64_tests {
     }
 
     #[test]
-    #[expected_failure(abort_code = 100)]
+    #[expected_failure(abort_code = fixed_point64::fixed_point64::ERR_DIVIDE_BY_ZERO)]
     fun test_fail_fraction() {
         let a = fixed_point64::fraction(256, 0);
         fixed_point64::to_u128(a);
@@ -130,7 +130,7 @@ module fixed_point64::fixed_point64_tests {
     }
 
     #[test]
-    #[expected_failure(abort_code = 100)]
+    #[expected_failure(abort_code = fixed_point64::fixed_point64::ERR_DIVIDE_BY_ZERO)]
     fun test_fail_div() {
         let a = fixed_point64::encode(1);
         fixed_point64::div(a, 0);
@@ -245,7 +245,7 @@ module fixed_point64::fixed_point64_tests {
     }
     
     #[test]
-    #[expected_failure(abort_code = 101)]
+    #[expected_failure(abort_code = fixed_point64::fixed_point64::ERR_DIVISOR_TOO_SMALL)]
     fun test_fail_divisor_too_small_div_fp() {
         let a = fixed_point64::encode(10);
         let b = fixed_point64::from_u128(1);
@@ -253,7 +253,7 @@ module fixed_point64::fixed_point64_tests {
     }
     
     #[test]
-    #[expected_failure(abort_code = 102)]
+    #[expected_failure(abort_code = fixed_point64::fixed_point64::ERR_DIVIDE_RESULT_TOO_LARGE)]
     fun test_fail_overflow_div_fp() {
         let a = fixed_point64::from_u128(1 << 125);
         let b = fixed_point64::from_u128(1 << 35);

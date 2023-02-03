@@ -3,13 +3,13 @@ module fixed_point64::fixed_point64 {
     // Error codes.
 
     /// When divide by zero attempted.
-    const ERR_DIVIDE_BY_ZERO: u64 = 100;
+    const ERR_DIVIDE_BY_ZERO: u64 = 0;
 
     /// When divisor is too small that will cause overflow
-    const ERR_DIVISOR_TOO_SMALL: u64 = 101;
+    const ERR_DIVISOR_TOO_SMALL: u64 = 1;
     
     /// When divide result is too large that will cause overflow
-    const ERR_DIVIDE_RESULT_TOO_LARGE: u64 = 102;
+    const ERR_DIVIDE_RESULT_TOO_LARGE: u64 = 2;
 
     /// 2^64 == 1 << 64
     const TWO_POW_64: u128 = 1 << 64;

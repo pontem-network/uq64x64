@@ -2,13 +2,28 @@
 module fixed_point64::log_exp_math_tests {
     use fixed_point64::fixed_point64;
     use fixed_point64::log_exp_math;
+    
+
+    #[test]
+    fun test_exp_close_to_1() {
+        let x = fixed_point64::fraction(10000000001, 10000000000);
+        let (sign, result_1) = log_exp_math::ln(x);
+        assert!(sign == 1, 0);
+
+        let y = fixed_point64::fraction(10000000000, 10000000000);
+        let (sign, result_2) = log_exp_math::ln(y);
+        assert!(sign == 1, 0);
+
+        assert!(!fixed_point64::eq(&result_1, &result_2), 0);
+    }
 
     #[test]
     fun test_log2_sqrt_2() {
         let x = fixed_point64::fraction(1414213562, 1000000000);
         let (sign, result) = log_exp_math::log2(x);
         assert!(sign == 1, 0);
-        assert!(fixed_point64::to_u128(result) == 9223372023969873920, 1); // approx 0.5
+        
+        assert!(fixed_point64::to_u128(result) == 9223372029833779420, 1); // approx 0.5
     }
     
     #[test]
@@ -16,6 +31,7 @@ module fixed_point64::log_exp_math_tests {
         let x = fixed_point64::encode(4);
         let (sign, result) = log_exp_math::log2(x);
         assert!(sign == 1, 0);
+        
         assert!(fixed_point64::to_u128(result) == 36893488147419103232, 1); // approx 2.0
     }
     
@@ -24,7 +40,8 @@ module fixed_point64::log_exp_math_tests {
         let x = fixed_point64::fraction(707106781, 1000000000);
         let (sign, result) = log_exp_math::log2(x);
         assert!(sign == 0, 0);
-        assert!(fixed_point64::to_u128(result) == 9223372049739677696, 1); // approx 0.5
+        
+        assert!(fixed_point64::to_u128(result) == 9223372043875772196, 1); // approx 0.5
     }
     
     #[test]
@@ -32,7 +49,8 @@ module fixed_point64::log_exp_math_tests {
         let x = fixed_point64::fraction(2718281828459, 1000000000000);
         let (sign, result) = log_exp_math::log2(x);
         assert!(sign == 1, 0);
-        assert!(fixed_point64::to_u128(result) == 26613026192598499328, 1);
+        
+        assert!(fixed_point64::to_u128(result) == 26613026195688202108, 1);
     }
     
     #[test]
@@ -40,7 +58,8 @@ module fixed_point64::log_exp_math_tests {
         let x = fixed_point64::fraction(2718281828459, 1000000000000);
         let (sign, result) = log_exp_math::ln(x);
         assert!(sign == 1, 0);
-        assert!(fixed_point64::to_u128(result) == 18446744072685616496, 1); // approx 1.0
+        
+        assert!(fixed_point64::to_u128(result) == 18446744074827235266, 1); // approx 1.0
     }
 
     #[test]
@@ -48,7 +67,8 @@ module fixed_point64::log_exp_math_tests {
         let x = fixed_point64::fraction(1648721271, 1000000000);
         let (sign, result) = log_exp_math::ln(x);
         assert!(sign == 1, 0);
-        assert!(fixed_point64::to_u128(result) == 9223372039319852720, 1); // approx 0.5
+        
+        assert!(fixed_point64::to_u128(result) == 9223372040768892103, 1); // approx 0.5
     }
     
     #[test]
@@ -112,7 +132,7 @@ module fixed_point64::log_exp_math_tests {
     }
     
     #[test]
-    #[expected_failure(abort_code = 200)]
+    #[expected_failure(abort_code = log_exp_math::ERR_EXPONENT_TOO_LARGE)]
     fun test_exp_fail_too_large() {
         let x = fixed_point64::from_u128(1 << 70);
         log_exp_math::exp(1, x);
